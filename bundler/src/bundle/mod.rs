@@ -14,6 +14,7 @@ use swc_bundler::Config;
 use swc_bundler::Load;
 use swc_bundler::ModuleData;
 use swc_bundler::ModuleRecord;
+use swc_bundler::ModuleType;
 use swc_bundler::Resolve;
 use swc_common::errors::ColorConfig;
 use swc_common::errors::Handler;
@@ -31,11 +32,12 @@ use swc_ecma_parser::parse_file_as_module;
 use swc_ecma_parser::EsSyntax;
 use swc_ecma_parser::Syntax;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Options {
     pub skip_cache: bool,
     pub minify: bool,
     pub import_map: Option<ImportMap>,
+    pub module_type: ModuleType,
 }
 
 impl Default for Options {
@@ -44,6 +46,7 @@ impl Default for Options {
             skip_cache: false,
             minify: true,
             import_map: None,
+            module_type: ModuleType::Iife,
         }
     }
 }
@@ -57,6 +60,11 @@ pub fn run_bundle(entry: &str, options: &Options) -> Result<String> {
     // the bundle with extra code that the runtime can load anyway.
     let external_modules: Vec<Atom> = CORE_MODULES.keys().map(|k| (*k).into()).collect();
 
+    #[allow(clippy::needless_match)]
+    let module = match options.module_type {
+        ModuleType::Es => ModuleType::Es,
+        ModuleType::Iife => ModuleType::Iife,
+    };
     // Create the bundler.
     let mut bundler = Bundler::new(
         &globals,
@@ -69,6 +77,7 @@ pub fn run_bundle(entry: &str, options: &Options) -> Result<String> {
         Config {
             external_modules,
             require: false,
+            module,
             ..Default::default()
         },
         Box::new(Hook),
