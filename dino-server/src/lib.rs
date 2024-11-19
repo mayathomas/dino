@@ -2,7 +2,7 @@ mod config;
 mod error;
 mod router;
 
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
 use anyhow::Result;
 use axum::{
@@ -13,6 +13,7 @@ use axum::{
     routing::any,
     Json, Router,
 };
+use dashmap::DashMap;
 use error::AppError;
 use indexmap::IndexMap;
 use serde_json::json;
@@ -26,13 +27,13 @@ type ProjectRoutes = IndexMap<String, Vec<ProjectRoute>>;
 
 #[derive(Clone)]
 pub struct AppState {
-    router: Arc<HashMap<String, SwappableAppRouter>>,
+    routers: DashMap<String, SwappableAppRouter>,
 }
-pub async fn start_server(port: u16, router: HashMap<String, SwappableAppRouter>) -> Result<()> {
+pub async fn start_server(port: u16, routers: DashMap<String, SwappableAppRouter>) -> Result<()> {
     let addr = format!("0.0.0.0:{port}");
     let listener = TcpListener::bind(addr).await?;
     info!("Listening on {}", listener.local_addr()?);
-    let state = AppState::new(router);
+    let state = AppState::new(routers);
     let app = Router::new()
         .route("/*path", any(handler))
         .with_state(state);
@@ -52,7 +53,7 @@ async fn handler(
     host.split_off(host.find(':').unwrap_or(host.len()));
     info!("host:{}", host);
     let router = state
-        .router
+        .routers
         .get(&host)
         .ok_or(AppError::HostNotFound(host.to_string()))?
         .load_handler();
@@ -77,9 +78,7 @@ async fn handler(
 }
 
 impl AppState {
-    fn new(router: HashMap<String, SwappableAppRouter>) -> Self {
-        Self {
-            router: Arc::new(router),
-        }
+    fn new(routers: DashMap<String, SwappableAppRouter>) -> Self {
+        Self { routers }
     }
 }

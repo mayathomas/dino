@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::collections::HashMap;
+use dashmap::DashMap;
 use tracing::level_filters::LevelFilter;
 use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt, Layer as _};
 
@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
 
     let config = include_str!("../fixtures/config.yml");
     let config: ProjectConfig = serde_yaml::from_str(config)?;
-    let mut router = HashMap::new();
+    let router = DashMap::new();
     router.insert(
         "localhost".to_string(),
         SwappableAppRouter::try_new(config.routes)?,

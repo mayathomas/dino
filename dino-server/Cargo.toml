@@ -18,3 +18,4 @@ serde_yaml = "0.9.34"
 serde = { workspace = true }
 indexmap = { version = "2.6.0", features = ["serde"] }
 thiserror = "2.0.3"
+dashmap = "6.1.0"
