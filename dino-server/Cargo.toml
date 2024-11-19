@@ -10,12 +10,16 @@ tracing-subscriber = { workspace = true }
 anyhow = "1.0.93"
 arc-swap = "1.7.1"
 axum = { version = "0.7.9", features = ["http2", "query", "tracing"] }
+dashmap = "6.1.0"
+dino-macros = { workspace = true }
+indexmap = { version = "2.6.0", features = ["serde"] }
 matchit = "0.7"
+rquickjs = { version = "0.6.2", features = ["full"] }
+rquickjs-macro = "0.6.2"
 serde_json = { workspace = true }
-tracing = { workspace = true }
-tokio = { workspace = true }
 serde_yaml = "0.9.34"
 serde = { workspace = true }
-indexmap = { version = "2.6.0", features = ["serde"] }
 thiserror = "2.0.3"
-dashmap = "6.1.0"
+tokio = { workspace = true }
+tracing = { workspace = true }
+typed-builder = "0.20.0"
