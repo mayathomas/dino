@@ -4,11 +4,11 @@ routes:
   # example routes
   /api/hello/:id:
     - method: GET
-      handler: hello1
+      handler: hello
     - method: POST
-      handler: hello2
+      handler: hello
   /api/:name/:id:
     - method: GET
-      handler: hello3
+      handler: hello
     - method: POST
-      handler: hello4
+      handler: hello

@@ -1,3 +1,6 @@
+use anyhow::Result;
+use std::{fs, path::Path};
+
 use axum::http::Method;
 use serde::Deserialize;
 
@@ -14,6 +17,14 @@ pub struct ProjectRoute {
     #[serde(deserialize_with = "deserialize_method")]
     pub method: Method,
     pub handler: String,
+}
+
+impl ProjectConfig {
+    pub fn load(filename: impl AsRef<Path>) -> Result<Self> {
+        let content = fs::read_to_string(filename)?;
+        let config: ProjectConfig = serde_yaml::from_str(&content)?;
+        Ok(config)
+    }
 }
 
 fn deserialize_method<'de, D>(deserializer: D) -> Result<Method, D::Error>

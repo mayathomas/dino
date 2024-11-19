@@ -8,3 +8,6 @@ Content-Type: application/json
     "id":1,
     "name":"hello"
 }
+
+### dino run
+GET http://localhost:3000/api/hello
