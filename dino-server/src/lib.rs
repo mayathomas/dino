@@ -1,6 +1,7 @@
 mod config;
 mod engine;
 mod error;
+mod middleware;
 mod router;
 
 use std::collections::HashMap;
@@ -18,6 +19,7 @@ use dashmap::DashMap;
 use error::AppError;
 use indexmap::IndexMap;
 use matchit::Match;
+use middleware::ServerTimeLayer;
 use tokio::net::TcpListener;
 
 pub use config::*;
@@ -48,6 +50,7 @@ pub async fn start_server(port: u16, routers: Vec<TenentRouter>) -> Result<()> {
     let state = AppState::new(map);
     let app = Router::new()
         .route("/*path", any(handler))
+        .layer(ServerTimeLayer)
         .with_state(state);
     axum::serve(listener, app.into_make_service()).await?;
     Ok(())
